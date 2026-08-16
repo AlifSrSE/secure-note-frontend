@@ -14,6 +14,8 @@ export default function Dashboard() {
   const [editingId, setEditingId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [updating, setUpdating] = useState(false);
 
   const fetchNotes = async (p = 1) => {
     const res = await listNotes(p);
@@ -28,15 +30,19 @@ export default function Dashboard() {
 
   const handleCreate = async (e) => {
     e.preventDefault();
+    setCreating(true);
     await createNote({ title, content });
     setTitle('');
     setContent('');
+    setCreating(false);
     fetchNotes(1);
   };
 
   const handleUpdate = async (id) => {
+    setUpdating(true);
     await updateNote(id, { title: editTitle, content: editContent });
     setEditingId(null);
+    setUpdating(false);
     fetchNotes(page);
   };
 
@@ -79,7 +85,7 @@ export default function Dashboard() {
               onChange={(e) => setContent(e.target.value)}
               required
             />
-            <button type="submit">Add Note</button>
+            <button type="submit" disabled={creating}>{creating ? 'Adding...' : 'Add Note'}</button>
           </form>
         </div>
 
@@ -99,7 +105,7 @@ export default function Dashboard() {
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
                   />
-                  <button onClick={() => handleUpdate(note._id)}>Save</button>
+                  <button disabled={updating}>{updating ? 'Editing...' : 'Save'}</button>
                   <button className="secondary" onClick={() => setEditingId(null)}>Cancel</button>
                 </div>
               ) : (
