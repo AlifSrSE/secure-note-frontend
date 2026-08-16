@@ -9,6 +9,8 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [interests, setInterests] = useState([]);
   const [posts, setPosts] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState('');
@@ -23,20 +25,32 @@ export default function AdminDashboard() {
       navigate('/dashboard');
       return;
     }
+    setLoading(true);
     loadUsers();
     loadInterests();
   }, [user, navigate]);
 
   const loadUsers = async (p = 1) => {
-    const res = await listUsers(p);
-    setUsers(res.data.users);
-    setPage(res.data.page);
-    setPages(res.data.pages);
+    try {
+      setError('');
+      const res = await listUsers(p);
+      setUsers(res.data.users);
+      setPage(res.data.page);
+      setPages(res.data.pages);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load users');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const loadInterests = async () => {
-    const res = await getUsersByInterest();
-    setInterests(res.data);
+    try {
+      const res = await getUsersByInterest();
+      setInterests(res.data);
+    } catch (err) {
+      console.error('Failed to load interests:', err);
+    }
   };
 
   const loadUserPosts = async (userId) => {
@@ -99,6 +113,9 @@ export default function AdminDashboard() {
             <h3>All Users</h3>
             <button onClick={() => setShowAddForm(!showAddForm)}>{showAddForm ? 'Cancel' : 'Add User'}</button>
           </div>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {loading && <p>Loading users...</p>}
+          {!loading && users.length === 0 && !error && <p>No users found.</p>}
           {showAddForm && (
             <form onSubmit={handleAddUser} style={{ marginTop: 16, padding: 16, background: '#f9fafb', borderRadius: 6 }}>
               <input
