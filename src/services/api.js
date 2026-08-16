@@ -22,6 +22,7 @@ export const getNote = (id) => api.get(`/notes/${id}`);
 export const createNote = (data) => api.post('/notes', data);
 export const updateNote = (id, data) => api.put(`/notes/${id}`, data);
 export const deleteNote = (id) => api.delete(`/notes/${id}`);
+export const createUser = (data) => api.post('/admin/users', data);
 export const listUsers = (page = 1) => api.get(`/admin/users?page=${page}`);
 export const getUser = (id) => api.get(`/admin/users/${id}`);
 export const updateUser = (id, data) => api.put(`/admin/users/${id}`, data);

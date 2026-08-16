@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { listUsers, getUser, updateUser, deleteUser, getUsersByInterest, getUserPosts } from '../services/api';
+import { listUsers, getUser, createUser, updateUser, deleteUser, getUsersByInterest, getUserPosts } from '../services/api';
 
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
@@ -14,6 +14,9 @@ export default function AdminDashboard() {
   const [selectedUserId, setSelectedUserId] = useState('');
   const [editForm, setEditForm] = useState({ name: '', email: '', role: '', interests: [] });
   const [editingId, setEditingId] = useState(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [addForm, setAddForm] = useState({ name: '', email: '', password: '', role: 'user', interests: '' });
+  const [addingUser, setAddingUser] = useState(false);
 
   useEffect(() => {
     if (!user || user.role !== 'admin') {
@@ -58,6 +61,24 @@ export default function AdminDashboard() {
     loadUsers(page);
   };
 
+  const handleAddUser = async (e) => {
+    e.preventDefault();
+    setAddingUser(true);
+    try {
+      await createUser({
+        ...addForm,
+        interests: addForm.interests.split(',').map((s) => s.trim()).filter(Boolean),
+      });
+      setAddForm({ name: '', email: '', password: '', role: 'user', interests: '' });
+      setShowAddForm(false);
+      loadUsers(page);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to create user');
+    } finally {
+      setAddingUser(false);
+    }
+  };
+
   const handleDelete = async (id) => {
     await deleteUser(id);
     loadUsers(page);
@@ -74,7 +95,46 @@ export default function AdminDashboard() {
       </nav>
       <div className="container">
         <div className="card">
-          <h3>All Users</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3>All Users</h3>
+            <button onClick={() => setShowAddForm(!showAddForm)}>{showAddForm ? 'Cancel' : 'Add User'}</button>
+          </div>
+          {showAddForm && (
+            <form onSubmit={handleAddUser} style={{ marginTop: 16, padding: 16, background: '#f9fafb', borderRadius: 6 }}>
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={addForm.name}
+                onChange={(e) => setAddForm({ ...addForm, name: e.target.value })}
+                required
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                value={addForm.email}
+                onChange={(e) => setAddForm({ ...addForm, email: e.target.value })}
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={addForm.password}
+                onChange={(e) => setAddForm({ ...addForm, password: e.target.value })}
+                required
+              />
+              <select value={addForm.role} onChange={(e) => setAddForm({ ...addForm, role: e.target.value })}>
+                <option value="user">user</option>
+                <option value="admin">admin</option>
+              </select>
+              <input
+                type="text"
+                placeholder="Interests (comma separated)"
+                value={addForm.interests}
+                onChange={(e) => setAddForm({ ...addForm, interests: e.target.value })}
+              />
+              <button type="submit" disabled={addingUser}>{addingUser ? 'Adding...' : 'Create User'}</button>
+            </form>
+          )}
           <table>
             <thead>
               <tr>
