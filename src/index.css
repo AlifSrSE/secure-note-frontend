@@ -56,8 +56,11 @@ nav {
 
 nav a {
   color: #fff;
-  margin-left: 16px;
   text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  background: #374151;
+  font-size: 14px;
 }
 
 table {

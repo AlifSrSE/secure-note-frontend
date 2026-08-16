@@ -64,12 +64,14 @@ export default function Dashboard() {
 
   return (
     <div>
-      <nav>
-        <div>Secure Notes</div>
-        <div>
-          <span>Hello, {user?.name} ({user?.role})</span>
-          {user?.role === 'admin' && <a href="/admin">Admin</a>}
-          <button onClick={logout}>Logout</button>
+      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 24px', background: '#1f2937', color: '#fff' }}>
+        <div style={{ fontSize: 18, fontWeight: 'bold' }}>Secure Notes</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <span style={{ fontSize: 14, opacity: 0.9 }}>Hello, {user?.name} ({user?.role})</span>
+          {user?.role === 'admin' && (
+            <a href="/admin" style={{ color: '#fff', textDecoration: 'none', padding: '6px 12px', borderRadius: 4, background: '#374151', fontSize: 14 }}>Admin</a>
+          )}
+          <button onClick={logout} style={{ padding: '6px 12px', background: '#dc2626', fontSize: 14 }}>Logout</button>
         </div>
       </nav>
       <div className="container">
