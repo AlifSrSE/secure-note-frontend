@@ -16,6 +16,8 @@ export default function Dashboard() {
   const [editContent, setEditContent] = useState('');
   const [creating, setCreating] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchNotes = async (p = 1) => {
     const res = await listNotes(p);
@@ -47,7 +49,10 @@ export default function Dashboard() {
   };
 
   const handleDelete = async (id) => {
+    setDeleting(true);
     await deleteNote(id);
+    setDeleteTarget(null);
+    setDeleting(false);
     fetchNotes(page);
   };
 
@@ -113,7 +118,7 @@ export default function Dashboard() {
                   <h4>{note.title}</h4>
                   <p>{note.content}</p>
                   <button onClick={() => startEdit(note)}>Edit</button>
-                  <button className="danger" onClick={() => handleDelete(note._id)}>Delete</button>
+                  <button className="danger" onClick={() => setDeleteTarget(note)}>Delete</button>
                 </div>
               )}
             </div>
@@ -125,6 +130,25 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {deleteTarget && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)', display: 'flex',
+          alignItems: 'center', justifyContent: 'center', zIndex: 1000
+        }}>
+          <div className="card" style={{ maxWidth: 400, textAlign: 'center' }}>
+            <h3>Are you sure you want to delete this note?</h3>
+            <p><strong>{deleteTarget.title}</strong></p>
+            <div style={{ marginTop: 16 }}>
+              <button className="secondary" onClick={() => setDeleteTarget(null)} disabled={deleting}>Cancel</button>
+              <button className="danger" onClick={() => handleDelete(deleteTarget._id)} disabled={deleting} style={{ marginLeft: 8 }}>
+                {deleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
