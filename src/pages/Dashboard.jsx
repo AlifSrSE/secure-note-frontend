@@ -69,7 +69,7 @@ export default function Dashboard() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <span style={{ fontSize: 14, opacity: 0.9 }}>Hello, {user?.name} ({user?.role})</span>
           {user?.role === 'admin' && (
-            <a href="/admin" style={{ color: '#fff', textDecoration: 'none', padding: '6px 12px', borderRadius: 4, background: '#374151', fontSize: 14 }}>Admin</a>
+            <a href="/admin" style={{ color: '#fff', textDecoration: 'none', padding: '6px 12px', borderRadius: 4, background: '#374151', fontSize: 14 }}>Admin Panel</a>
           )}
           <button onClick={logout} style={{ padding: '6px 12px', background: '#dc2626', fontSize: 14 }}>Logout</button>
         </div>
